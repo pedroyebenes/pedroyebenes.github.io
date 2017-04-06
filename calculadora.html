@@ -1,0 +1,94 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Calculadora coste/beneficio</title>
+	<style>
+		body {
+			font-family: "Open Sans", sans-serif;
+			line-height: 1.25;
+		}
+		input {
+			font-size: 1em;
+		}
+		table {
+			border: 1px solid #ccc;
+			border-collapse: collapse;
+			margin: 0 auto;
+			padding: 0;
+			 table-layout: fixed;
+			 text-align: center;
+		}
+		table caption {
+			font-size: 3em;
+			margin: .5em 0 .75em;
+		}
+		table tr {
+			background: #f8f8f8;
+			border: 1px solid #ddd;
+			padding: .35em;
+		}
+		table td {
+			font-size: 2em;
+			padding: .625em;
+			 text-align: center;
+		}
+		@media screen and (max-device-width : 400px)
+		{
+			table {
+				width: 100%;
+			}
+			table caption {
+				font-size: 4em;
+			}
+			table td {
+				font-size: 3em;
+			}
+		}
+	</style>
+	<script type="text/javascript"> 
+		function update(){
+			var cost = document.getElementById("cost"); 
+			var margin = document.getElementById("margin"); 
+			var price = document.getElementById("price"); 
+			var profit = document.getElementById("profit"); 
+		
+			var result = costBenefit(cost.value, margin.value); 
+			if(result != -1){
+				price.value = result;
+				profit.value = round(result - cost.value);
+			}
+		}
+		function costBenefit(cost, margin){
+			var val = -1;
+			if(margin < 100 && margin > 0){
+				val = round(cost / (1 - (margin/100)));
+			}
+			return val;
+		}
+		function round(val){
+			return Math.round(val * 100)/100;
+		}
+	</script>
+</head>
+<body>
+	<table>
+		<caption> Calculadora coste/beneficio</caption>
+		<tr>
+			<td scope="col">Coste:</td>
+			<td scope="col"> <input type="text" id="cost" size="10" oninput="update()" \> </td>
+		</tr>
+		<tr>
+			<td scope="col">Margen:</td>
+			<td scope="col"> <input type="text" id="margin" size="10" oninput="update()" \> </td>
+		</tr>
+		<tr>
+			<td scope="col">Precio:</td>
+			<td scope="col"> <input type="text" id="price" size="10" oninput="update()" disabled \> </td>
+		</tr>
+		<tr>
+			<td scope="col">Beneficio:</td>
+			<td scope="col"> <input type="text" id="profit" size="10" oninput="update()" disabled \> </td>
+		</tr>
+	</table>
+</body>
+</html>
