@@ -1,0 +1,71 @@
+<html>
+<head>
+ <title>Calculadora coste/beneficio</title>
+
+ <style>
+  * {
+      font-size: 20pt;
+  }
+ </style>
+</head>
+<body>
+  <table>
+  <tr>
+   <th colspan="2">
+    Calculadora coste/beneficio
+   </th>
+  </tr>
+  <tr>
+   <td scope="col">Coste:</td>
+   <td scope="col">
+    <input type="text" id="coste" value="" size="10" oninput="update()" \>
+   </td>
+  </tr>
+  <tr>
+   <td scope="col">Margen:</td>
+   <td scope="col">
+    <input type="text" id="margen" value="" size="10" oninput="update()" \>
+   </td>
+  </tr>
+  <tr>
+   <td scope="col">Precio:</td>
+   <td scope="col">
+    <input type="text" id="precio" value="" size="10" oninput="update()" disabled \>
+   </td>
+  </tr>
+  <tr>
+   <td scope="col">Beneficio:</td>
+   <td scope="col">
+    <input type="text" id="beneficio" value="" size="10" oninput="update()" disabled \>
+   </td>
+  </tr>
+  </table>
+
+<script type="text/javascript"> 
+function update(){
+	var coste = document.getElementById("coste"); // Get text field
+	var margen = document.getElementById("margen"); // Get text field
+	var precio = document.getElementById("precio"); // Get text field
+	var beneficio = document.getElementById("beneficio"); // Get text field
+
+	var resultado = costebeneficio(coste.value, margen.value); 
+	precio.value = resultado;
+	var ben = 0;
+	if(resultado != -1){
+		ben = redondear(resultado - coste.value);
+	}
+	beneficio.value = ben;
+}
+function costebeneficio(coste, margen){
+	var valor = -1;
+	if(margen < 100 && margen > 0){
+		valor = redondear(coste / (1 - (margen/100)));
+	}
+	return valor;
+}
+
+function redondear(valor){
+	return Math.round(valor * 100)/100;
+}
+
+</script>
