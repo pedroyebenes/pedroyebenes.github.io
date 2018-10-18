@@ -1,0 +1,149 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>D10</title>
+	<style>
+		body {
+			font-family: "Open Sans", sans-serif;
+			line-height: 1.25;
+		}
+		input {
+			font-size: 1em;
+		}
+		table {
+			border: 1px solid #ccc;
+			border-collapse: collapse;
+			margin: 0 auto;
+			padding: 0;
+			table-layout: fixed;
+			text-align: center;
+		}
+		table caption {
+			font-size: 3em;
+			margin: .5em 0 .75em;
+		}
+		table tr {
+			background: #f8f8f8;
+			border: 1px solid #ddd;
+			padding: .35em;
+		}
+		table td {
+			font-size: 2em;
+			padding: .625em;
+			text-align: center;
+		}
+		button {
+			font-size: 1em;
+			width: 100%;
+		}
+		@media screen and (max-device-width : 400px)
+		{
+			table {
+				width: 100%;
+			}
+			table caption {
+				font-size: 4em;
+			}
+			table td {
+				font-size: 3em;
+			}
+			button {
+				font-size: 2em;
+			}
+		}
+	</style>
+	<script type="text/javascript"> 
+		function roll(dif){
+			var rand = Math.floor((Math.random() * 10) + 1);
+			var output;
+			if (rand >= dif){
+				output = "<b>" + rand +"</b>"
+			} else
+			{
+				output = rand
+			}
+			return output
+		}
+		function roll_all(){
+			var dices = Number(document.getElementById("dices").value); 
+			var difficulty = document.getElementById("difficulty").value; 
+			var ones = document.getElementById("ones").value; 
+			var tens = document.getElementById("tens").value; 
+
+			var output = ""
+			if(dices > 0 && dices <= 30 && difficulty > 0 && difficulty <= 10){
+				var successes = 0; 
+				var failures = 0; 
+				var botches = 0; 
+
+				output = "[ "
+
+				for (var i = 0; i < dices; i++) {
+					//var rand = roll(difficulty)
+					var rand = Math.floor((Math.random() * 10) + 1); //Math.floor((Math.random() * 10) + 1);
+					if(rand >= difficulty){
+						output += "<b>" + rand + "</b> "
+						successes += 1
+						if( tens && rand == 10){
+							dices += 1
+						}
+					}else if( rand == 1){
+						output += "<i>" + rand + "</i> "
+						botches += 1
+						failures += 1
+						if(ones){
+							successes -= 1
+						}
+					}else{
+						output += rand + " "
+						failures += 1
+					}
+				}
+				if (successes < 0) successes = 0
+				output += "] <br \> "
+				output += successes + " éxitos; " 
+				output += failures + " fallos;  " 
+				output += botches + " fracasos;"
+			}
+			return output
+		}
+		function update(){
+			var history = document.getElementById("history"); 
+			var s = history.innerHTML;
+			history.innerHTML = roll_all() + "<br />" + s
+
+		}
+	</script>
+</head>
+<body>
+	<table>
+		<caption>D10</caption>
+		<tr>
+			<td scope="col">Dados (1 - 30):</td>
+			<td scope="col"> <input type="text" id="dices" size="2" value="5" \> </td>
+		</tr>
+		<tr>
+			<td scope="col">Dificultad (1-10):</td>
+			<td scope="col"> <input type="text" id="difficulty" size="2"  value="6" \> </td>
+		</tr>
+		<tr>
+			<td scope="col">1's restan éxitos:</td>
+			<td scope="col">  <input type="checkbox" id="ones" checked \> </td>
+		</tr>
+		<tr>
+			<td scope="col">10's vuelven a tirar:</td>
+			<td scope="col">  <input type="checkbox" id="tens" checked \> </td>
+		</tr>
+		<tr>
+			<td scope="col" colspan="2">
+	 			<button type="button" onclick="update()">Tirar!</button> 
+			</td>
+		</tr>
+		<tr>
+			<td scope="col" colspan="2">
+				<p id="history" style="overflow: auto; height: 200px;"> </p>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
