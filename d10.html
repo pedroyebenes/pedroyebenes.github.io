@@ -36,6 +36,13 @@
 			font-size: 1em;
 			width: 100%;
 		}
+		p {
+			overflow: auto;
+			height: 5em;
+		}
+		input[type=checkbox] {
+			transform: scale(1.5);
+		}
 		@media screen and (max-device-width : 400px)
 		{
 			table {
@@ -53,17 +60,6 @@
 		}
 	</style>
 	<script type="text/javascript"> 
-		function roll(dif){
-			var rand = Math.floor((Math.random() * 10) + 1);
-			var output;
-			if (rand >= dif){
-				output = "<b>" + rand +"</b>"
-			} else
-			{
-				output = rand
-			}
-			return output
-		}
 		function roll_all(){
 			var dices = Number(document.getElementById("dices").value); 
 			var difficulty = document.getElementById("difficulty").value; 
@@ -79,8 +75,7 @@
 				output = "[ "
 
 				for (var i = 0; i < dices; i++) {
-					//var rand = roll(difficulty)
-					var rand = Math.floor((Math.random() * 10) + 1); //Math.floor((Math.random() * 10) + 1);
+					var rand = Math.floor((Math.random() * 10) + 1);
 					if(rand >= difficulty){
 						output += "<b>" + rand + "</b> "
 						successes += 1
@@ -141,7 +136,7 @@
 		</tr>
 		<tr>
 			<td scope="col" colspan="2">
-				<p id="history" style="overflow: auto; height: 200px;"> </p>
+				<p id="history" > </p>
 			</td>
 		</tr>
 	</table>
