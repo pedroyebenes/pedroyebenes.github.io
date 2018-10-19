@@ -64,8 +64,8 @@
 		function roll_all(){
 			var dices = Number(document.getElementById("dices").value); 
 			var difficulty = document.getElementById("difficulty").value; 
-			var ones = document.getElementById("ones").value; 
-			var tens = document.getElementById("tens").value; 
+			var ones = document.getElementById("ones").checked; 
+			var tens = document.getElementById("tens").checked; 
 
 			var output = ""
 			if(dices > 0 && dices <= 30 && difficulty > 0 && difficulty <= 10){
@@ -86,9 +86,9 @@
 					}else if( rand == 1){
 						output += "<i>" + rand + "</i> "
 						botches += 1
-						failures += 1
 						if(ones){
 							successes -= 1
+							failures += 1
 						}
 					}else{
 						output += rand + " "
