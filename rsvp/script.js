@@ -494,6 +494,12 @@ const epubError=document.getElementById("epubError");
 const chapterList=document.getElementById("chapterList");
 const chapCount=document.getElementById("chapCount");
 const bookDropdown=document.getElementById("bookDropdown");
+const clearBtn=document.getElementById("clearBtn");
+const importFile=document.getElementById("importFile");
+const importUrl=document.getElementById("importUrl");
+const epubUrl=document.getElementById("epubUrl");
+const loadUrlBtn=document.getElementById("loadUrlBtn");
+const importModeRadios=document.querySelectorAll('input[name="importMode"]');
 
 function setError(msg){ epubError.textContent=msg||""; }
 function clearChaptersUI(){ chapterList.innerHTML=""; chapCount.textContent="0"; }
@@ -643,6 +649,20 @@ function renderChapterList(chapters){
   });
 }
 
+// Import mode toggle
+importModeRadios.forEach(radio=>{
+  radio.addEventListener("change", ()=>{
+    if(radio.value==="file"){
+      importFile.style.display="";
+      importUrl.style.display="none";
+    }else{
+      importFile.style.display="none";
+      importUrl.style.display="";
+      epubUrl.focus();
+    }
+  });
+});
+
 // File input
 epubFile.addEventListener("change", async ()=>{
   const file=epubFile.files?.[0];
@@ -665,6 +685,79 @@ epubFile.addEventListener("change", async ()=>{
   }
 });
 
+// URL input
+async function loadEpubFromUrl(){
+  const url=epubUrl.value.trim();
+  if(!url) return;
+
+  if(!/^https?:\/\//i.test(url)){
+    setError("Please enter a valid URL starting with http:// or https://");
+    return;
+  }
+
+  try{
+    currentSourceKey = "url:" + url;
+    bookDropdown.value = "";
+    setHeld(false);
+    epubMeta.textContent = `Loading from URL...`;
+
+    // Try direct fetch with CORS mode
+    let resp;
+    try {
+      resp = await fetch(url, { 
+        cache: "no-store",
+        mode: "cors",
+        credentials: "omit"
+      });
+    } catch (fetchErr) {
+      // If CORS fails, try with a CORS proxy as fallback
+      if (fetchErr.name === "TypeError" && (fetchErr.message.includes("Failed to fetch") || fetchErr.message.includes("NetworkError"))) {
+        console.log("Direct fetch failed, trying CORS proxy...");
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        resp = await fetch(proxyUrl, { cache: "no-store" });
+      } else {
+        throw fetchErr;
+      }
+    }
+
+    if(!resp.ok) {
+      throw new Error(`Could not load EPUB from URL: ${resp.status} ${resp.statusText}`);
+    }
+
+    const buf = await resp.arrayBuffer();
+    if(!buf || buf.byteLength === 0) {
+      throw new Error("Downloaded file is empty");
+    }
+
+    epubFile.value = "";
+    const displayName = new URL(url).pathname.split("/").pop() || url;
+    await loadEpubArrayBuffer(buf, displayName);
+    setError("");
+  }catch(err){
+    console.error(err);
+    currentBook=null;
+    currentChapterIndex=-1;
+    updateChapterButtons();
+    epubMeta.textContent="No book loaded.";
+    clearChaptersUI();
+    
+    let errorMsg = String(err?.message || err);
+    if(errorMsg.includes("Failed to fetch") || errorMsg.includes("NetworkError") || 
+       (err?.name === "TypeError" && err?.message?.includes("fetch"))) {
+      errorMsg = "CORS error: The server doesn't allow direct browser downloads. The app will try using a CORS proxy automatically, but if it still fails, download the file locally and use the File option instead.";
+    }
+    setError(errorMsg);
+  }
+}
+
+loadUrlBtn.addEventListener("click", loadEpubFromUrl);
+epubUrl.addEventListener("keydown", (e)=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    loadEpubFromUrl();
+  }
+});
+
 // Books/ manifest dropdown (Option A)
 async function loadBooksManifest(){
   try{
@@ -679,10 +772,13 @@ async function loadBooksManifest(){
 
     bookDropdown.innerHTML = `<option value="">Choose a book from books/…</option>`;
     for(const item of data){
-      if(!item || typeof item.file!=="string") continue;
-      const title = (typeof item.title==="string" && item.title.trim()) ? item.title.trim() : item.file;
+      if(!item) continue;
+      const source = (typeof item.url==="string" && item.url.trim()) ? item.url.trim() :
+                     (typeof item.file==="string" && item.file.trim()) ? item.file.trim() : null;
+      if(!source) continue;
+      const title = (typeof item.title==="string" && item.title.trim()) ? item.title.trim() : source;
       const opt = document.createElement("option");
-      opt.value = item.file;
+      opt.value = source;
       opt.textContent = title;
       bookDropdown.appendChild(opt);
     }
@@ -693,22 +789,26 @@ async function loadBooksManifest(){
 }
 
 bookDropdown.addEventListener("change", async ()=>{
-  const file = bookDropdown.value;
-  if(!file) return;
+  const source = bookDropdown.value;
+  if(!source) return;
 
-  const key = "books:" + file;
+  const key = "books:" + source;
   if(key === currentSourceKey) return;
 
   try{
     currentSourceKey = key;
     setHeld(false);
 
-    const resp = await fetch("books/" + file, { cache: "no-store" });
-    if(!resp.ok) throw new Error(`Could not load books/${file}`);
+    // Check if source is a URL (starts with http:// or https://) or a local file
+    const isUrl = /^https?:\/\//i.test(source);
+    const fetchPath = isUrl ? source : "books/" + source;
+
+    const resp = await fetch(fetchPath, { cache: "no-store" });
+    if(!resp.ok) throw new Error(`Could not load ${isUrl ? source : `books/${source}`}`);
     const buf = await resp.arrayBuffer();
 
     epubFile.value = "";
-    await loadEpubArrayBuffer(buf, file);
+    await loadEpubArrayBuffer(buf, isUrl ? new URL(source).pathname.split("/").pop() || source : source);
     setError("");
   }catch(err){
     console.error(err);
@@ -719,6 +819,21 @@ bookDropdown.addEventListener("change", async ()=>{
     clearChaptersUI();
     setError(String(err?.message || err));
   }
+});
+
+// Clear button
+clearBtn.addEventListener("click", ()=>{
+  setHeld(false);
+  editor.value = "";
+  clearChaptersUI();
+  currentBook = null;
+  currentChapterIndex = -1;
+  currentSourceKey = "";
+  bookDropdown.value = "";
+  epubMeta.textContent = "No book loaded.";
+  setError("");
+  refreshTokensAndIndexFromCursor();
+  updateChapterButtons();
 });
 
 // ---------------------- Init ----------------------

@@ -106,7 +106,51 @@ main{
   border-bottom:1px solid var(--border);
   display:flex; gap:10px; align-items:center; flex-wrap:wrap;
 }
+.importMode{
+  display:flex; gap:4px;
+  padding:4px;
+  background:rgba(0,0,0,.25);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.modeLabel{
+  display:flex; align-items:center;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  user-select:none;
+  font-size:13px;
+  color:var(--muted);
+  transition:background 0.15s;
+}
+.modeLabel:hover{background:rgba(255,255,255,.04)}
+.modeLabel input[type="radio"]{
+  margin:0 6px 0 0;
+  cursor:pointer;
+}
+.modeLabel input[type="radio"]:checked + span{color:var(--text); font-weight:500}
+.modeLabel:has(input[type="radio"]:checked){
+  background:rgba(92,200,255,.12);
+  color:var(--text);
+}
+.importFile, .importUrl{
+  display:flex; gap:8px; align-items:center;
+}
 input[type="file"]{display:none}
+input[type="url"]{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.25);
+  color:var(--text);
+  font-size:14px;
+  min-width:280px;
+  outline:none;
+}
+input[type="url"]:focus{
+  border-color:rgba(92,200,255,.4);
+  background:rgba(0,0,0,.35);
+}
 .fileBtn{
   display:inline-flex; align-items:center; gap:8px;
   padding:8px 10px; border-radius:12px; border:1px solid var(--border);
@@ -237,6 +281,7 @@ body.textHidden #leftPanel{ display:none; }
 
   header{ gap:8px; }
   input[type="range"]{ width:160px; }
+  input[type="url"]{ min-width:200px; flex:1; }
 
   .panelHeader{ gap:8px; }
   .panelHeader .controls{ gap:6px; }

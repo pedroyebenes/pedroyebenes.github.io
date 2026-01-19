@@ -38,12 +38,32 @@
 
       <div class="leftBody">
         <div class="epubBar">
-          <label class="fileBtn" for="epubFile">📘 Import EPUB</label>
-          <input id="epubFile" type="file" accept=".epub,application/epub+zip" />
+          <div class="importMode">
+            <label class="modeLabel">
+              <input type="radio" name="importMode" value="file" checked />
+              <span>File</span>
+            </label>
+            <label class="modeLabel">
+              <input type="radio" name="importMode" value="url" />
+              <span>URL</span>
+            </label>
+          </div>
+
+          <div class="importFile" id="importFile">
+            <label class="fileBtn" for="epubFile">📘 Import EPUB</label>
+            <input id="epubFile" type="file" accept=".epub,application/epub+zip" />
+          </div>
+
+          <div class="importUrl" id="importUrl" style="display: none;">
+            <input id="epubUrl" type="url" placeholder="Enter EPUB URL..." />
+            <button id="loadUrlBtn" class="fileBtn" title="Load EPUB from URL">Load</button>
+          </div>
 
           <select id="bookDropdown" class="bookSelect" title="Load a book from books/">
             <option value="">Loading books…</option>
           </select>
+
+          <button id="clearBtn" class="fileBtn" title="Clear textarea and chapters">Clear</button>
 
           <div class="epubMeta" id="epubMeta">No book loaded.</div>
         </div>
