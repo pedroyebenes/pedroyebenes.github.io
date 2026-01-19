@@ -8,19 +8,23 @@
 </head>
 
 <body>
+  <!-- Header: Main controls for WPM, settings, and navigation -->
   <header>
+    <!-- WPM (Words Per Minute) control -->
     <div class="group">
       <label for="wpmRange">WPM</label>
       <input id="wpmRange" type="range" min="100" max="900" step="10" value="350" />
       <input id="wpmNum" type="number" min="100" max="900" step="10" value="350" />
     </div>
 
+    <!-- Reading settings -->
     <div class="group">
       <label><input id="smartPauses" type="checkbox" checked /> Smart pauses</label>
       <label><input id="showGuide" type="checkbox" checked /> Anchor</label>
       <label><input id="pairShortWords" type="checkbox" /> Pair short words</label>
     </div>
 
+    <!-- Navigation controls -->
     <div class="group">
       <button id="toggleTextBtn" title="Hide/Show text area">Hide text</button>
       <button id="rewindBtn" title="Rewind 10 words">⟲ -10</button>
@@ -31,13 +35,16 @@
   </header>
 
   <main>
+    <!-- Left Panel: Text Editor & EPUB Import -->
     <section class="panel" id="leftPanel">
       <div class="panelHeader">
         <h2>Text / EPUB — set cursor, then play</h2>
       </div>
 
       <div class="leftBody">
+        <!-- EPUB Import Controls -->
         <div class="epubBar">
+          <!-- Import mode selector (File vs URL) -->
           <div class="importMode">
             <label class="modeLabel">
               <input type="radio" name="importMode" value="file" checked />
@@ -49,25 +56,30 @@
             </label>
           </div>
 
+          <!-- File import -->
           <div class="importFile" id="importFile">
             <label class="fileBtn" for="epubFile">📘 Import EPUB</label>
             <input id="epubFile" type="file" accept=".epub,application/epub+zip" />
           </div>
 
+          <!-- URL import -->
           <div class="importUrl" id="importUrl" style="display: none;">
             <input id="epubUrl" type="url" placeholder="Enter EPUB URL..." />
             <button id="loadUrlBtn" class="fileBtn" title="Load EPUB from URL">Load</button>
           </div>
 
+          <!-- Books dropdown (from books/index.json) -->
           <select id="bookDropdown" class="bookSelect" title="Load a book from books/">
             <option value="">Loading books…</option>
           </select>
 
           <button id="clearBtn" class="fileBtn" title="Clear textarea and chapters">Clear</button>
 
+          <!-- Book metadata display -->
           <div class="epubMeta" id="epubMeta">No book loaded.</div>
         </div>
 
+        <!-- Chapter list -->
         <div class="chapters">
           <div class="chaptersHeader">
             <div>Chapters</div>
@@ -76,6 +88,7 @@
           <div id="chapterList"></div>
         </div>
 
+        <!-- Text editor -->
         <textarea id="editor">Paste text here.
 
 Desktop: hold Space to play (dead-man). Release to pause.
@@ -83,10 +96,12 @@ Mobile: touch & hold the RSVP display area to play. Release to pause.
 
 On release, the cursor jumps to the current word.</textarea>
 
+        <!-- Error messages -->
         <div class="error" id="epubError"></div>
       </div>
     </section>
 
+    <!-- Right Panel: RSVP Display -->
     <section class="panel" id="rightPanel">
       <div class="panelHeader">
         <h2>RSVP display</h2>
@@ -98,11 +113,13 @@ On release, the cursor jumps to the current word.</textarea>
       </div>
 
       <div class="stageWrap">
+        <!-- RSVP display stage -->
         <div class="stage" id="stage">
           <div class="anchorGuide" id="anchorGuide"></div>
           <div class="word" id="word"></div>
         </div>
 
+        <!-- Footer with status and hints -->
         <div class="footerBar">
           <div>
             <span class="pill" id="statusPill">Paused</span>
